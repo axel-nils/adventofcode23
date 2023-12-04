@@ -17,6 +17,19 @@ let listLines (file: path) : schematic = [for (line: row) in (readLines file) ->
 let input = listLines "DayThree/3.txt"
 input |> Seq.iter(fun x -> printfn "%s" x) 
 
+let smallInput = 
+    ["467..114..";
+     "...*......";
+     "..35..633.";
+     "......#...";
+     "617*......";
+     ".....+.58.";
+     "..592.....";
+     "......755.";
+     "...$.*....";
+     ".664.598.."]
+
+let dims matrix = (List.length matrix, matrix[0] |> Seq.toList |> List.length)
 
 
 let charIsNum a  = 
