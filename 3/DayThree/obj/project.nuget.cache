@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "KYwXt7JWDnCP9Wl5TknZvbaU15lusl1JPxF6ozHo8IysvRE7GAwHRec6yaM8wvguRwG5703gSZbvkNh8QBnkUw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\axeln\\Desktop\\adventofcode23\\3\\DayThree\\DayThree.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\axeln\\.nuget\\packages\\fsharp.core\\8.0.100\\fsharp.core.8.0.100.nupkg.sha512"
+  ],
+  "logs": []
+}
