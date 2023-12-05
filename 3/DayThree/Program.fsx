@@ -6,6 +6,15 @@ type path = string
 type row = string
 type schematic = List<row>
 
+let charIsNum a  = 
+    List.contains a ['0'; '1'; '2'; '3'; '4'; '5'; '6'; '7'; '8'; '9']
+
+let charIsSymbol (a: char) =
+    (not (charIsNum a)) && (not(a = '.')) 
+
+let stringIsSymbol (a: string) =
+    a |> char |> charIsSymbol
+
 let readLines (filePath: path) = seq {
     use sr = new StreamReader (filePath)
     while not sr.EndOfStream do
@@ -14,10 +23,10 @@ let readLines (filePath: path) = seq {
 
 let listLines (file: path) : schematic = [for (line: row) in (readLines file) -> line]
 
-let input = listLines "DayThree/3.txt"
+let input = listLines "3.txt"
 input |> Seq.iter(fun x -> printfn "%s" x) 
 
-let smallInput = 
+let smallInput : schematic = 
     ["467..114..";
      "...*......";
      "..35..633.";
@@ -31,18 +40,18 @@ let smallInput =
 
 let dims matrix = (List.length matrix, matrix[0] |> Seq.toList |> List.length)
 
+let extend (r: row) = failwith "Not implemented"
 
-let charIsNum a  = 
-    List.contains a ['0'; '1'; '2'; '3'; '4'; '5'; '6'; '7'; '8'; '9']
+let rec extendLeft (r: row) (i: int) : int = 
+    match i with
+    | 0 -> i
+    | _ -> if charIsNum r[i-1] then extendLeft r i else i
 
-let charIsSymbol (a: char) =
-    (not (charIsNum a)) && (not(a = '.')) 
-
-let stringIsSymbol (a: string) =
-    a |> char |> charIsSymbol
-
-
-
+let rec extendRight (r: row) (i: int) (l: int): int = 
+    match i with
+    | l -> i
+    | _ -> if charIsNum r[l+1] then extendRight r i l else i
+    
 
 let testString = ['4'; '.'; '3'; '2'; '0';]
 let charTest = testString |> Seq.map charIsSymbol |> Seq.fold (fun x y -> x || y) false
