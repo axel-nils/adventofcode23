@@ -12,46 +12,49 @@ let charIsNum a  =
 let charIsSymbol (a: char) =
     (not (charIsNum a)) && (not(a = '.')) 
 
-let stringIsSymbol (a: string) =
-    a |> char |> charIsSymbol
-
 let readLines (filePath: path) = seq {
-    use sr = new StreamReader (filePath)
-    while not sr.EndOfStream do
-        yield sr.ReadLine ()
+        use sr = new StreamReader (filePath)
+        while not sr.EndOfStream do
+            yield sr.ReadLine ()
 }
-
-let listLines (file: path) : schematic = [for (line: row) in (readLines file) -> line]
-
-let input = listLines "3.txt"
-input |> Seq.iter(fun x -> printfn "%s" x) 
-
-let smallInput : schematic = 
-    ["467..114..";
-     "...*......";
-     "..35..633.";
-     "......#...";
-     "617*......";
-     ".....+.58.";
-     "..592.....";
-     "......755.";
-     "...$.*....";
-     ".664.598.."]
-
-let dims matrix = (List.length matrix, matrix[0] |> Seq.toList |> List.length)
-
-let extend (r: row) = failwith "Not implemented"
+let input: schematic = readLines "3.txt" |> Seq.toList
 
 let rec extendLeft (r: row) (i: int) : int = 
     match i with
     | 0 -> i
-    | _ -> if charIsNum r[i-1] then extendLeft r i else i
+    | x when charIsNum r[x-1] -> extendLeft r (x-1)
+    | x -> x
 
-let rec extendRight (r: row) (i: int) (l: int): int = 
+let rec extendRight (r: row) (i: int): int = 
     match i with
-    | l -> i
-    | _ -> if charIsNum r[l+1] then extendRight r i l else i
+    | x when x = r.Length-1 -> x
+    | x when charIsNum r[x+1] -> extendRight r (x+1)
+    | x -> x
     
+let extend (r: row) (i: int) =
+    (extendLeft r i, extendRight r i)
 
-let testString = ['4'; '.'; '3'; '2'; '0';]
-let charTest = testString |> Seq.map charIsSymbol |> Seq.fold (fun x y -> x || y) false
+let surroundings (s: schematic) (i: int) (a, b) =
+    List.allPairs  [for x in [(if i > 0 then i-1 else i)..(if i < (s.Length-1) then i+1 else i)] -> x] [for x in [(if a > 0 then a-1 else a)..(if b < (s[i].Length-1) then b+1 else b)] -> x]
+
+let checkSurronding (s: schematic) ls =
+    [for l in ls -> s[fst l][snd l]] 
+    |> List.fold (fun acc elem -> charIsSymbol elem || acc) false 
+
+let sumNum (r: row) (a: int, b: int) = 
+    List.map (fun (n, p) -> (10.0 ** p) * n ) [for x in [a..b] -> (float(string(r[x])), float(b-x))]
+    |> List.sum |> int
+
+let sumRow (s: schematic) (r: int) =
+    [0..s[r].Length-1] 
+    |> List.filter (fun x -> charIsNum (s[r][x])) 
+    |> List.map (extend (s[r])) 
+    |> List.distinct 
+    |> List.filter (fun x ->(surroundings s r x |> checkSurronding s))
+    |> List.map (sumNum s[r])
+    |> List.sum
+
+let sumSchematic (s: schematic) =
+    [0..s.Length-1] |> List.map (sumRow s) |> List.sum
+
+printfn "%d" (sumSchematic input)
